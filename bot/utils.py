@@ -37,6 +37,7 @@ class BotMessageHandler(object):
     def __init__(self, event):
         self.event = event
         self.bot_user = self.get_bot_user(event.sender) or self.create_bot_user(event.sender)
+        self.message = None
 
     ## Bot user utils ##
 
@@ -68,22 +69,21 @@ class BotMessageHandler(object):
         event = self.event
 
         # retrieve appropriate message based on event type
-        message = None
         if event.is_received:
             # a message has been sent to our page
-            message = self.handle_received(event)
+            self.message = self.handle_received(event)
         elif event.is_postback:
             # a Postback button, Get Started button, Persistent menu or Structured Message has been tapped
-            message = self.handle_postback(event)
+            self.message = self.handle_postback(event)
         else:
             # event is not recognized
             return
 
-        if message is None:
+        if self.message is None:
             text = "Sorry! We couldn't understand your message. :("
-            message = Message(text=text)
+            self.message = Message(text=text)
 
-        self.send_message(message)
+        self.send_message()
 
         if log:
             self.log()
@@ -127,12 +127,18 @@ class BotMessageHandler(object):
 
     ## Logging utils ##
     def log(self):
+        self.log_event()
+        self.log_message()
+
+    def log_event(self):
+        pass
+
+    def log_message(self):
         pass
 
     # Message sender
-    def send_message(self, message):
-        sender = self.event.sender
-        request = MessageRequest(sender, message)
+    def send_message(self):
+        request = MessageRequest(self.event.sender, self.message)
         client = MessengerClient(token)
         client.send(request)
 
