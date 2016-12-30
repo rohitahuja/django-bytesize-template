@@ -22,6 +22,15 @@ from messenger import (
 token = os.environ.get('PAGE_ACCESS_TOKEN')
 
 
+# Master payload handler function
+def handle_payload(payload, log=False):
+    wh = Webhook(payload)
+    for entry in wh.entries:
+        for event in entry.messaging:
+            handler = BotMessageHandler(event)
+            handler.handle(log)
+
+
 # Master message handler class for received messages
 #TODO MAKE MORE GENERAL AND ADAPTABLE TO CHANGE
 class BotMessageHandler(object):
@@ -126,18 +135,6 @@ class BotMessageHandler(object):
         request = MessageRequest(sender, message)
         client = MessengerClient(token)
         client.send(request)
-
-
-# Master payload handler class
-class BotPayloadHandler(object):
-    def __init__(self, payload):
-        self.payload = Webhook(payload)
-
-    def handle(self, log=False):
-        for entry in self.payload.entries:
-            for event in entry.messaging:
-                handler = BotMessageHandler(event)
-                handler.handle(log)
 
 
 # Prepares thread settings in chat
