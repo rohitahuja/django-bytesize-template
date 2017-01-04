@@ -6,7 +6,7 @@ import os
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from utils import handle_payload
+from utils.handler import handle_payload
 
 
 @csrf_exempt

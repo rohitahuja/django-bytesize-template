@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 # Python imports
 import os
+from common import enum
 
 # Django imports
 from django.db import models
@@ -34,4 +35,22 @@ class BotUser(models.Model):
 
 
 class BotMessage(models.Model):
-    #all necessary attributes in messages
+    mid = models.CharField(max_length=30, primary_key=True)
+    seq = models.PositiveIntegerField()
+
+    sender_id = models.CharField(max_length=30)
+    recipient_id = models.CharField(max_length=30)
+    timestamp = models.DateTimeField()
+    received = models.BooleanField(default=True)
+    delivered = models.BooleanField(default=False)
+    read = models.BooleanField(default=False)
+
+    # Generic payload column that will store messaging object as json string
+    payload = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['-seq']
+
+    @property
+    def sent(self):
+        return not self.received
