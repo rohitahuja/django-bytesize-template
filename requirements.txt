@@ -1,7 +1,7 @@
 dj-database-url==0.4.1
 Django==1.10.4
 gunicorn==19.6.0
--e git://github.com/rohitahuja/messenger.git@997d98e7f489aca80ea90fd56cd8af62212acc5b#egg=messenger
+-e git://github.com/rohitahuja/messenger.git@c23c68ab5900b8da7edf6f7db8e3b69242a62df9#egg=messenger
 psycopg2==2.6.2
 requests==2.12.4
 whitenoise==3.2
