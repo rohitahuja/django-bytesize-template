@@ -1,18 +1,9 @@
-import os
-
-from ..models import BotUser
-
 from messenger import (
     Message,
-    MessengerClient,
-    MessageRequest,
-    UserProfile,
     Webhook,
 )
 
-from logger import MessageLogger
-
-token = os.environ.get('PAGE_ACCESS_TOKEN')
+from base.handler import BaseMessageHandler
 
 
 def handle_payload(payload, log=False):
@@ -23,118 +14,17 @@ def handle_payload(payload, log=False):
             handler.handle()
 
 
-class MessageHandler(object):
+class MessageHandler(BaseMessageHandler):
     """MessageHandler
 
-    Class for message handling. To capture each message case, implement the
-    handle methods with NotImplemented.
+    Application message handler. To handle message cases, should override the methods that have
+        raise NotImplementedError
 
-    Parameters
-    ----------
-    event: WebhookMessaging object
-        message event to handle
+    Please take a look at the BaseMessageHandler class in base/handler.py to see the methods and attributes
+    available for use. Additionally, it's possible that not all the handlers need overriding. Just get rid
+    of it if it isn't necessary.
 
-    should_create_user: bool
-        indicates whether or not to create a bot user if it does not exist
-
-    should_log: bool
-        indicates whether or not to log the message event
-    """
-    def __init__(self, event, should_create_user=False, should_log=False):
-        self.event = event
-        self.bot_user = (self.get_bot_user(event.sender) or
-                        (should_create_user and self.create_bot_user(event.sender)))
-        self.logger = MessageLogger(event) if should_log else None
-        self.message = None
-
-    """Bot user utilities
-
-    The following are helpers for getting and creating a bot user.
-    """
-
-    def get_bot_user(self, sender):
-        """get_bot_user
-
-        Gets corresponding bot user if it exists
-
-        Parameters
-        ----------
-        sender: Sender object
-            the sender of the event, contained in self.event.sender
-
-        Returns
-        -------
-        bot_user: BotUser object
-            the corresponding bot user or None
-        """
-        try:
-            return BotUser.objects.get(bot_id=sender.id)
-        except BotUser.DoesNotExist:
-            return None
-
-    # Creates a bot user
-    def create_bot_user(self, sender):
-        """create_bot_user
-
-        Creates a bot user with all its available user info if retrievable
-
-        Parameters
-        ----------
-        sender: Sender object
-            the sender of the event, contained in self.event.sender
-
-        Returns
-        -------
-        bot_user: BotUser object
-            the created bot user
-        """
-
-        # Fetch user info
-        try:
-            user_profile = UserProfile(token, sender)
-            data = user_profile.data
-        except:
-            data = {}
-
-        # Create bot user
-        bot_user = BotUser.objects.create(
-            bot_id=sender.id,
-            **data)
-
-        return bot_user
-
-    """Message handling utilities
-
-    The following are helpers for handling all types of receivable messages.
-    """
-
-    def handle(self):
-        """handle
-
-        Master message handler method.
-        """
-        event = self.event
-
-        if event.is_message:
-            self.message = self.handle_message(event)
-        elif event.is_postback:
-            self.message = self.handle_postback(event)
-        elif event.is_delivery:
-            self.message = self.handle_delivery(event)
-        elif event.is_read:
-            self.message = self.handle_read(event)
-        else:
-            return
-
-        if self.message is None:
-            return
-
-        self.send_message()
-
-        if self.logger:
-            self.logger.log()
-
-    """Note that the following handle_{{ type }} methods should have the following:
+    They should also have the following signature:
 
     Parameters
     ----------
@@ -145,47 +35,33 @@ class MessageHandler(object):
     -------
     message: Message object
         message to send to the user or None if it cannot be handled
+
+    or
+
+    messages: List of Message objects
+        messages to send to the user
     """
 
     def handle_delivery(self, event):
-        pass
+        """handle_delivery
+
+        Handles a delivered message, which are given when a message we sent is delivered.
+        """
+        raise NotImplementedError
 
     def handle_read(self, event):
-        pass
+        """handle_read
 
-    def handle_message(self, event):
-        """handle_message
-
-        Handles a message, which can be either an echo of our message or
-        a received message by a user.
+        Handles a read message, which are those read by the user.
         """
-        if event.is_echo(event):
-            return self.handle_echo(event)
-        else:
-            return self.handle_received(event)
-
-        return None
+        raise NotImplementedError
 
     def handle_echo(self, event):
         """handle_echo
 
         Handles an echoed message, which are those that we send.
         """
-        pass
-
-    def handle_received(self, event):
-        """handle_received
-
-        Handles a received message, which are those that the user sends.
-        """
-        if event.has_quick_reply:
-            return self.handle_received_quick_reply(event)
-        elif event.has_text:
-            return self.handle_received_text(event)
-        elif event.has_attachments:
-            return self.handle_received_attachments(event)
-
-        return None
+        raise NotImplementedError
 
     def handle_received_quick_reply(self, event):
         """handle_received_quick_reply
@@ -194,7 +70,6 @@ class MessageHandler(object):
         """
         # text = "Thanks for the quick reply message!\n\n%s" % event.message['text']
         # return Message(text=text)
-
         raise NotImplementedError
 
     def handle_received_text(self, event):
@@ -247,12 +122,3 @@ class MessageHandler(object):
         # return None
 
         raise NotImplementedError
-
-    def send_message(self):
-        """send_message
-
-        Sends message to event sender.
-        """
-        request = MessageRequest(self.event.sender, self.message)
-        client = MessengerClient(token)
-        return client.send(request)
