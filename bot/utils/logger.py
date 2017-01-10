@@ -7,8 +7,6 @@ class MessageLogger(object):
 
     Class for logging messages our bot receives.
     """
-    def __init__(self, event):
-        self.event = event
 
     """Bot message utilities
 
@@ -28,12 +26,11 @@ class MessageLogger(object):
             recipient_id=event.recipient.id,
         )
 
-    def log(self):
+    def log(self, event):
         """log
 
         Master log function.
         """
-        event = self.event
         bm = self.get_bot_message(event.mid) or self.build_bot_message(event)
 
         if event.is_message:

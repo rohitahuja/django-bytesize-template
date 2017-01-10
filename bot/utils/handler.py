@@ -7,11 +7,12 @@ from base.handler import BaseMessageHandler
 
 
 def handle_payload(payload, log=False):
+    handler = MessageHandler()
+
     wh = Webhook(payload)
     for entry in wh.entries:
         for event in entry.messaging:
-            handler = MessageHandler(event=event, should_create_user=True, should_log=True)
-            handler.handle()
+            handler.handle(event=event, should_create_user=True, should_log=True)
 
 
 class MessageHandler(BaseMessageHandler):

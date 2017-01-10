@@ -18,23 +18,21 @@ class SenderActionHandler(object):
     Class for sender action handling. Used to create a more realistic messaging experience
     with our bot.
     """
-    def __init__(self, event):
-        self.event = event
 
-    def mark_seen(self):
+    def mark_seen(self, sender):
         action = SenderAction('mark_seen')
-        return self.send_action(action)
+        return self.send_action(sender, action)
 
-    def typing_on(self):
+    def typing_on(self, sender):
         action = SenderAction('typing_on')
-        return self.send_action(action)
+        return self.send_action(sender, action)
 
-    def typing_off(self):
+    def typing_off(self, sender):
         action = SenderAction('typing_off')
-        return self.send_action(action)
+        return self.send_action(sender, action)
 
-    def send_action(self, action):
-        request = MessageRequest(recipient=self.event.sender, sender_action=action)
+    def send_action(self, sender, action):
+        request = MessageRequest(recipient=sender, sender_action=action)
         client = MessengerClient(token)
         return client.send(request)
 
@@ -44,25 +42,23 @@ class BaseMessageHandler(object):
 
     Base class for message handling. To handle each message case, inherit the class and
     override the handle methods with NotImplemented.
-
-    Parameters
-    ----------
-    event: WebhookMessaging object
-        message event to handle
-
-    should_create_user: bool
-        indicates whether or not to create a bot user if it does not exist
-
-    should_log: bool
-        indicates whether or not to log the message event
     """
-    def __init__(self, event, should_create_user=False, should_log=False):
-        self.event = event
-        self.bot_user = (self.get_bot_user(event.sender) or
-                        (should_create_user and self.create_bot_user(event.sender)))
-        self.action_handler = SenderActionHandler(event)
-        self.logger = MessageLogger(event) if should_log else None
-        self.message = None
+
+    """Properties
+
+    Lazily create attributes.
+    """
+    @property
+    def action_handler(self):
+        if not self.action_handler:
+            self.action_handler = SenderActionHandler()
+        return self.action_handler
+
+    @property
+    def logger(self):
+        if not self.logger:
+            self.logger = MessageLogger()
+        return self.logger
 
     """Bot user utilities
 
@@ -120,12 +116,12 @@ class BaseMessageHandler(object):
 
         return bot_user
 
-    def send_message(self, message):
+    def send_message(self, sender, message):
         """send_message
 
         Sends message to event sender.
         """
-        request = MessageRequest(recipient=self.event.sender, message=message)
+        request = MessageRequest(recipient=sender, message=message)
         client = MessengerClient(token)
         return client.send(request)
 
@@ -134,47 +130,61 @@ class BaseMessageHandler(object):
     The following are helpers for handling all types of receivable messages.
     """
 
-    def handle(self):
+    def handle(self, event, should_create_user=False, should_log=False):
         """handle
 
         Master message handler method.
+
+        Parameters
+        ----------
+        event: WebhookMessaging object
+            message event to handle
+
+        should_create_user: bool
+            indicates whether or not to create a bot user if it does not exist
+
+        should_log: bool
+            indicates whether or not to log the message event
         """
-        event = self.event
+        # Attach bot user object to event
+        event.bot_user = (self.get_bot_user(event.sender) or
+                         (should_create_user and self.create_bot_user(event.sender)))
 
         # If we received message, mark it as seen and set typing to on
         if event.is_received or event.is_postback:
-            self.action_handler.mark_seen()
-            self.action_handler.typing_on()
+            self.action_handler.mark_seen(event.sender)
+            self.action_handler.typing_on(event.sender)
 
         # Call appropriate message handler
+        message = None
         if event.is_message:
-            self.message = self.handle_message(event)
+            message = self.handle_message(event)
         elif event.is_postback:
-            self.message = self.handle_postback(event)
+            message = self.handle_postback(event)
         elif event.is_delivery:
-            self.message = self.handle_delivery(event)
+            message = self.handle_delivery(event)
         elif event.is_read:
-            self.message = self.handle_read(event)
+            message = self.handle_read(event)
         else:
             return
 
         # Set typing to off if necessary
         if event.is_received or event.is_postback:
-            self.action_handler.typing_off()
+            self.action_handler.typing_off(event.sender)
 
-        if self.message is None:
+        if message is None:
             return
 
         # Check if message is a set of messages or a single message
-        if type(self.message) is list:
-            for message in self.message:
-                self.send_message(message)
+        if type(message) is list:
+            for m in message:
+                self.send_message(event.sender, m)
         else:
-            self.send_message(self.message)
+            self.send_message(event.sender, message)
 
         # Log the event
-        if self.logger:
-            self.logger.log()
+        if should_log:
+            self.logger.log(event)
 
     def handle_message(self, event):
         """handle_message
