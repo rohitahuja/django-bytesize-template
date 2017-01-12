@@ -26,7 +26,7 @@ def webhook(request):
             return HttpResponse("failed")
 
         data = json.loads(request.body)
-        handle_payload(payload=data, log=True)
+        handle_payload(payload=data, should_log=True)
         return HttpResponse("lol")
     else:
         if "hub.verify_token" in request.GET:

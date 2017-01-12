@@ -6,13 +6,13 @@ from messenger import (
 from base.handler import BaseMessageHandler
 
 
-def handle_payload(payload, log=False):
+def handle_payload(payload, should_log=False):
     handler = MessageHandler()
 
     wh = Webhook(payload)
     for entry in wh.entries:
         for event in entry.messaging:
-            handler.handle(event=event, should_create_user=True, should_log=True)
+            handler.handle(event=event, should_create_user=True, should_log=should_log)
 
 
 class MessageHandler(BaseMessageHandler):
