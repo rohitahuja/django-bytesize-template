@@ -67,6 +67,8 @@ class MessageHandler(BaseMessageHandler):
         """handle_delivery
 
         Handles a delivered message, which are given when a message we sent is delivered.
+
+        It's likely that this doesn't need to be handled, so feel free to remove this method.
         """
         raise NotImplementedError
 
@@ -74,6 +76,8 @@ class MessageHandler(BaseMessageHandler):
         """handle_read
 
         Handles a read message, which are those read by the user.
+
+        It's likely that this doesn't need to be handled, so feel free to remove this method.
         """
         raise NotImplementedError
 
@@ -81,24 +85,20 @@ class MessageHandler(BaseMessageHandler):
         """handle_echo
 
         Handles an echoed message, which are those that we send.
-        """
-        raise NotImplementedError
 
-    def handle_received_quick_reply(self, event):
-        """handle_received_quick_reply
-
-        Handles a message that indicates a tapped quick reply.
+        It's likely that this doesn't need to be handled, so feel free to remove this method.
         """
-        # text = "Thanks for the quick reply message!\n\n%s" % event.message['text']
-        # return Message(text=text)
         raise NotImplementedError
 
     def handle_received_text(self, event):
         """handle_received_text
 
-        Handles a message that contains text.
+        Handles a message that contains text. This can contain text, quick replies, etc.
         """
-        # text = "Thanks for the following message!\n\n%s" % event.message['text']
+        # if 'quick_reply' in event.message:
+        #     text = "Thanks for the quick reply message!\n\n%s" % event.message['text']
+        # else:
+        #     text = "Thanks for the following message!\n\n%s" % event.message['text']
         # return Message(text=text)
 
         raise NotImplementedError

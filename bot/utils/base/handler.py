@@ -202,9 +202,7 @@ class BaseMessageHandler(object):
 
         Handles a received message, which are those that the user sends.
         """
-        if event.has_quick_reply:
-            return self.handle_received_quick_reply(event)
-        elif event.has_text:
+        if event.has_text:
             return self.handle_received_text(event)
         elif event.has_attachments:
             return self.handle_received_attachments(event)
@@ -252,17 +250,10 @@ class BaseMessageHandler(object):
         """
         pass
 
-    def handle_received_quick_reply(self, event):
-        """handle_received_quick_reply
-
-        Handles a message that indicates a tapped quick reply.
-        """
-        pass
-
     def handle_received_text(self, event):
         """handle_received_text
 
-        Handles a message that contains text.
+        Handles a message that contains text. This can contain text, quick replies, etc.
         """
         pass
 
