@@ -6,13 +6,13 @@ from messenger import (
 from base.handler import BaseMessageHandler
 
 
-def handle_payload(payload, should_log=False):
+def handle_payload(payload):
     handler = MessageHandler()
 
     wh = Webhook(payload)
     for entry in wh.entries:
         for event in entry.messaging:
-            handler.handle(event=event, should_create_user=True, should_log=should_log)
+            handler.handle(event)
 
 
 class MessageHandler(BaseMessageHandler):
@@ -42,6 +42,26 @@ class MessageHandler(BaseMessageHandler):
     messages: List of Message objects
         messages to send to the user
     """
+
+    def handle(self, event):
+        """handle
+
+        Master message handler method.
+
+        Currently calls the parent's handle method (which is necessary), but use this to add
+        handle defaults and customization such as:
+         - creating a user for some or all cases (see get_bot_user() and create_bot_user())
+         - logging specifc messages
+
+        Parameters
+        ----------
+        event: WebhookMessaging object
+            message event to handle
+        """
+        # Attach bot user object to event for access later on
+        # event.bot_user = self.get_bot_user(event.sender) or self.create_bot_user(event.sender)
+
+        return super().handle(event=event, should_log=True)
 
     def handle_delivery(self, event):
         """handle_delivery

@@ -1,10 +1,13 @@
 from __future__ import unicode_literals
 
-# Python imports
 import os
 
-# Django imports
 from django.db import models
+
+from messenger import (
+    Sender,
+    UserProfile,
+)
 
 token = os.environ.get('PAGE_ACCESS_TOKEN')
 
@@ -15,14 +18,33 @@ class BotUser(models.Model):
     Model for storing users of our bot.
     """
     bot_id = models.CharField(max_length=30, primary_key=True)
-    first_name = models.CharField(max_length=30, blank=True)
-    last_name = models.CharField(max_length=30, blank=True)
-    profile_pic = models.CharField(max_length=320, blank=True)
-    gender = models.CharField(max_length=8, blank=True)
 
     @property
     def full_name(self):
         return "%s %s" % (self.first_name, self.last_name)
+
+    @property
+    def user_profile(self):
+        if not self._user_profile:
+            sender = Sender(id=self.bot_id)
+            self._user_profile = UserProfile(token, sender)
+        return self._user_profile
+
+    @property
+    def first_name(self):
+        return self.user_profile.first_name
+
+    @property
+    def last_name(self):
+        return self.user_profile.last_name
+
+    @property
+    def profile_pic(self):
+        return self.user_profile.profile_pic
+
+    @property
+    def gender(self):
+        return self.user_profile.gender
 
     def serialize(self):
         data = {'id': self.bot_id}

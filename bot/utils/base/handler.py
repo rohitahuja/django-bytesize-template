@@ -3,11 +3,10 @@ from messenger import (
     MessengerClient,
     MessageRequest,
     SenderAction,
-    UserProfile,
 )
 
-from ..models import BotUser
-from logger import MessageLogger
+from ...models import BotUser
+from ..logger import MessageLogger
 
 token = os.environ.get('PAGE_ACCESS_TOKEN')
 
@@ -50,15 +49,21 @@ class BaseMessageHandler(object):
     """
     @property
     def action_handler(self):
-        if not self.action_handler:
-            self.action_handler = SenderActionHandler()
-        return self.action_handler
+        if not self._action_handler:
+            self._action_handler = SenderActionHandler()
+        return self._action_handler
 
     @property
     def logger(self):
-        if not self.logger:
-            self.logger = MessageLogger()
-        return self.logger
+        if not self._logger:
+            self._logger = MessageLogger()
+        return self._logger
+
+    @property
+    def client(self):
+        if not self._client:
+            self._client = MessengerClient(token)
+        return self._client
 
     """Bot user utilities
 
@@ -89,7 +94,7 @@ class BaseMessageHandler(object):
     def create_bot_user(self, sender):
         """create_bot_user
 
-        Creates a bot user with all its available user info if retrievable
+        Creates a bot user
 
         Parameters
         ----------
@@ -101,18 +106,8 @@ class BaseMessageHandler(object):
         bot_user: BotUser object
             the created bot user
         """
-
-        # Fetch user info
-        try:
-            user_profile = UserProfile(token, sender)
-            data = user_profile.data
-        except:
-            data = {}
-
-        # Create bot user
         bot_user = BotUser.objects.create(
-            bot_id=sender.id,
-            **data)
+            bot_id=sender.id)
 
         return bot_user
 
@@ -120,17 +115,32 @@ class BaseMessageHandler(object):
         """send_message
 
         Sends message to event sender.
+
+        Parameters
+        ----------
+        sender: Sender object
+            the sender of the event, contained in self.event.sender
+
+        message: Message object or list of Message objects
+            the message to send to the sender
         """
-        request = MessageRequest(recipient=sender, message=message)
-        client = MessengerClient(token)
-        return client.send(request)
+        def send(m):
+            request = MessageRequest(recipient=sender, message=m)
+            return self.client.send(request)
+
+        # Check if message is a set of messages or a single message
+        if type(message) is list:
+            for m in message:
+                send(m)
+        else:
+            send(message)
 
     """Message handling utilities
 
     The following are helpers for handling all types of receivable messages.
     """
 
-    def handle(self, event, should_create_user=False, should_log=False):
+    def handle(self, event, should_log=False):
         """handle
 
         Master message handler method.
@@ -140,18 +150,12 @@ class BaseMessageHandler(object):
         event: WebhookMessaging object
             message event to handle
 
-        should_create_user: bool
-            indicates whether or not to create a bot user if it does not exist
-
         should_log: bool
             indicates whether or not to log the message event
         """
-        # Attach bot user object to event
-        event.bot_user = (self.get_bot_user(event.sender) or
-                         (should_create_user and self.create_bot_user(event.sender)))
-
-        # If we received message, mark it as seen and set typing to on
+        # Page received message
         if event.is_received or event.is_postback:
+            # Mark it as seen and set typing to on
             self.action_handler.mark_seen(event.sender)
             self.action_handler.typing_on(event.sender)
 
@@ -172,14 +176,8 @@ class BaseMessageHandler(object):
         if event.is_received or event.is_postback:
             self.action_handler.typing_off(event.sender)
 
-        if message is None:
-            return
-
-        # Check if message is a set of messages or a single message
-        if type(message) is list:
-            for m in message:
-                self.send_message(event.sender, m)
-        else:
+        # Send message
+        if message:
             self.send_message(event.sender, message)
 
         # Log the event

@@ -6,7 +6,7 @@ import os
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from utils.handler import handle_payload
+from .utils.handler import handle_payload
 
 
 @csrf_exempt
@@ -26,7 +26,7 @@ def webhook(request):
             return HttpResponse("failed")
 
         data = json.loads(request.body)
-        handle_payload(payload=data, should_log=True)
+        handle_payload(payload=data)
         return HttpResponse("lol")
     else:
         if "hub.verify_token" in request.GET:
