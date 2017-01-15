@@ -64,11 +64,7 @@ class BotMessage(models.Model):
 
     Model for storing messages our bot receives.
     """
-    mid = models.CharField(max_length=30, blank=True)
-    seq = models.PositiveIntegerField(null=True, blank=True)
-
-    sender_id = models.CharField(max_length=30)
-    recipient_id = models.CharField(max_length=30)
+    bot_id = models.CharField(max_length=30, db_index=True)
     timestamp = models.DateTimeField(db_index=True)
     received = models.BooleanField(default=True)
     delivered_time = models.DateTimeField(null=True, blank=True)
@@ -79,7 +75,7 @@ class BotMessage(models.Model):
 
     # Order by most recent message
     class Meta:
-        ordering = ['-seq']
+        ordering = ['-timestamp']
 
     @property
     def sent(self):

@@ -51,7 +51,7 @@ class MessageHandler(BaseMessageHandler):
         Currently calls the parent's handle method (which is necessary), but use this to add
         handle defaults and customization such as:
          - creating a user for some or all cases (see get_bot_user() and create_bot_user())
-         - logging specifc messages
+         - logging specifc messages (setting the should_log for certain cases)
 
         Parameters
         ----------

@@ -30,7 +30,8 @@ def verify_token(request):
     Verifies token during webhook setup
     """
     if "hub.verify_token" in request.GET:
-        if request.GET["hub.verify_token"] == "yeezyyeezywhatsgood":
+        token = os.environ.get('VERIFY_TOKEN', "yeezyyeezywhatsgood")
+        if request.GET["hub.verify_token"] == token:
             return request.GET["hub.challenge"]
 
     return None
