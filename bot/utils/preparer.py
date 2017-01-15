@@ -3,6 +3,7 @@ from common import enum
 
 from messenger import (
     CallToActions,
+    Greeting,
     MenuItem,
     MessengerClient,
     Payload,
@@ -41,8 +42,27 @@ class BotThreadPreparer(object):
 
         Master prepare function.
         """
+        self.prepare_greeting()
         self.prepare_get_started()
         self.prepare_persistent_menu()
+
+    def prepare_greeting(self):
+        greeting = Greeting(text="Greetings to our bot!")
+
+        request = ThreadSettingsRequest.create_greeting(greeting)
+        self.send_thread_settings(request)
+
+    def prepare_get_started(self):
+        """prepare_get_started
+
+        Prepares get started screen postback.
+        """
+        call_to_actions = CallToActions()
+        payload = Payload('get_started,')
+        call_to_actions.add_payload(payload)
+
+        request = ThreadSettingsRequest.create_get_started_button(call_to_actions)
+        self.send_thread_settings(request)
 
     def prepare_persistent_menu(self):
         """prepare_persistent_menu
@@ -57,24 +77,13 @@ class BotThreadPreparer(object):
             menu_item = MenuItem.create_postback(title=title, payload='menu_item,%s' % item_id)
             call_to_actions.add_menu_item(menu_item)
 
-        self.send_thread_settings(call_to_actions)
+        request = ThreadSettingsRequest.create_persistent_menu(call_to_actions)
+        self.send_thread_settings(request)
 
-    def prepare_get_started(self):
-        """prepare_get_started
-
-        Prepares get started screen postback.
-        """
-        call_to_actions = CallToActions()
-        payload = Payload('get_started,')
-        call_to_actions.add_payload(payload)
-
-        self.send_thread_settings(call_to_actions)
-
-    def send_thread_settings(self, call_to_actions):
+    def send_thread_settings(self, request):
         """send_thread_settings
 
         Applies thread settings to chat
         """
         client = MessengerClient(token)
-        request = ThreadSettingsRequest.create_persistent_menu(call_to_actions)
         return client.send(request)

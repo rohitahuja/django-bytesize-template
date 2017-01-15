@@ -59,9 +59,10 @@ class MessageHandler(BaseMessageHandler):
             message event to handle
         """
         # Attach bot user object to event for access later on
-        # event.bot_user = self.get_bot_user(event.sender) or self.create_bot_user(event.sender)
+        # if event.is_received or event.is_postback:
+        #     event.bot_user = self.get_bot_user(event.sender) or self.create_bot_user(event.sender)
 
-        return super().handle(event=event, should_log=True)
+        return super(MessageHandler, self).handle(event=event, should_log=True)
 
     def handle_delivery(self, event):
         """handle_delivery
@@ -99,6 +100,7 @@ class MessageHandler(BaseMessageHandler):
         #     text = "Thanks for the quick reply message!\n\n%s" % event.message['text']
         # else:
         #     text = "Thanks for the following message!\n\n%s" % event.message['text']
+
         # return Message(text=text)
 
         raise NotImplementedError
@@ -138,8 +140,9 @@ class MessageHandler(BaseMessageHandler):
         # payload = event.postback['payload']
         # if payload.startswith('get_started,'):
         #     text = "Welcome to our bot!"
-        #     return Message(text=text)
+        # else:
+        #     text = "Couldn't handle postback. :("
 
-        # return None
+        # return Message(text=text)
 
         raise NotImplementedError

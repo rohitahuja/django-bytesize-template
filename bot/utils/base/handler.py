@@ -49,19 +49,19 @@ class BaseMessageHandler(object):
     """
     @property
     def action_handler(self):
-        if not self._action_handler:
+        if not hasattr(self, '_action_handler'):
             self._action_handler = SenderActionHandler()
         return self._action_handler
 
     @property
     def logger(self):
-        if not self._logger:
+        if not hasattr(self, '_logger'):
             self._logger = MessageLogger()
         return self._logger
 
     @property
     def client(self):
-        if not self._client:
+        if not hasattr(self, '_client'):
             self._client = MessengerClient(token)
         return self._client
 

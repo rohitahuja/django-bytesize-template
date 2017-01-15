@@ -25,7 +25,7 @@ class BotUser(models.Model):
 
     @property
     def user_profile(self):
-        if not self._user_profile:
+        if not hasattr(self, '_user_profile'):
             sender = Sender(id=self.bot_id)
             self._user_profile = UserProfile(token, sender)
         return self._user_profile
@@ -64,12 +64,12 @@ class BotMessage(models.Model):
 
     Model for storing messages our bot receives.
     """
-    mid = models.CharField(max_length=30, primary_key=True)
-    seq = models.PositiveIntegerField()
+    mid = models.CharField(max_length=30, blank=True)
+    seq = models.PositiveIntegerField(null=True, blank=True)
 
     sender_id = models.CharField(max_length=30)
     recipient_id = models.CharField(max_length=30)
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(db_index=True)
     received = models.BooleanField(default=True)
     delivered_time = models.DateTimeField(null=True, blank=True)
     read_time = models.DateTimeField(null=True, blank=True)
