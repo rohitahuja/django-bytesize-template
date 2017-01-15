@@ -3,7 +3,7 @@ from messenger import (
     Webhook,
 )
 
-from base.handler import BaseMessageHandler
+from base.handle import BaseMessageHandler
 
 
 def handle_payload(payload):

@@ -6,7 +6,7 @@ from messenger import (
 )
 
 from ...models import BotUser
-from ..logger import MessageLogger
+from ..log import MessageLogger
 
 token = os.environ.get('PAGE_ACCESS_TOKEN')
 
