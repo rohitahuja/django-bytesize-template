@@ -15,7 +15,7 @@ from .tasks import handle_payload
 def webhook(request):
     """webhook
 
-    Controller function for handling messenger events.
+    Router function for handling messenger events.
     """
     if request.method == 'POST':
         # Verify that the request is from Facebook
