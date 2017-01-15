@@ -26,6 +26,7 @@ def handle_payload(data):
 # Use the following as a model for creating periodically running tasks.
 #
 # See http://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html#crontab-schedules
+# Be sure to make the scheduled time in UTC.
 #
 # Feel free to remove or comment this out so this task doesn't get caught in the queue.
 @periodic_task(name="cleanup_messages", run_every=(crontab(hour=7, minute=30, day_of_week=1)))
