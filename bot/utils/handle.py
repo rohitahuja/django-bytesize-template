@@ -1,3 +1,4 @@
+import json
 from messenger import (
     Message,
     Webhook,
@@ -6,9 +7,10 @@ from messenger import (
 from base.handle import BaseMessageHandler
 
 
-def handle_payload(payload):
+def handle_payload(data):
     handler = MessageHandler()
 
+    payload = json.loads(data)
     wh = Webhook(payload)
     for entry in wh.entries:
         for event in entry.messaging:

@@ -1,5 +1,3 @@
-import json
-
 from django.http import (
     HttpResponse,
     HttpResponseForbidden,
@@ -21,8 +19,7 @@ def webhook(request):
             return HttpResponseForbidden("Request couldn't be verified.")
 
         # Handle the message payload
-        data = json.loads(request.body)
-        handle_payload(payload=data)
+        handle_payload(data=request.body)
 
         # Notify success
         return HttpResponse("Request successful.")
