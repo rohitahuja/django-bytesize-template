@@ -18,10 +18,8 @@ def verify_request(request):
 
     mac = hmac.new(os.environ.get('APP_SECRET'), msg=request.body, digestmod=hashlib.sha1)
     result = hmac.compare_digest(mac.hexdigest(), signature)
-    if not result:
-        return False
 
-    return True
+    return result
 
 
 def verify_token(request):

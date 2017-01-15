@@ -8,18 +8,22 @@ from .utils.verify import (
     verify_request,
     verify_token,
 )
-from .utils.handle import handle_payload
+from .tasks import handle_payload
 
 
 @csrf_exempt
 def webhook(request):
+    """webhook
+
+    Controller function for handling messenger events.
+    """
     if request.method == 'POST':
         # Verify that the request is from Facebook
         if not verify_request(request):
             return HttpResponseForbidden("Request couldn't be verified.")
 
-        # Handle the message payload
-        handle_payload(data=request.body)
+        # Handle the message payload asynchronously
+        handle_payload.apply_async((request.body,))
 
         # Notify success
         return HttpResponse("Request successful.")

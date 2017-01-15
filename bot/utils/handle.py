@@ -1,20 +1,8 @@
-import json
 from messenger import (
     Message,
-    Webhook,
 )
 
 from base.handle import BaseMessageHandler
-
-
-def handle_payload(data):
-    handler = MessageHandler()
-
-    payload = json.loads(data)
-    wh = Webhook(payload)
-    for entry in wh.entries:
-        for event in entry.messaging:
-            handler.handle(event)
 
 
 class MessageHandler(BaseMessageHandler):
