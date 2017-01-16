@@ -33,7 +33,7 @@ def handle_payload(data):
 def cleanup_messages():
     """cleanup_messages
 
-    Cleans up old messages based on given threshold.
+    Cleans up old messages based on given threshold. This runs at 7:30am (UTC) every Monday.
     """
     # THRESHOLD = 5000
 
