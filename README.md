@@ -89,7 +89,6 @@ Turn on the worker dyno:
 
 ### Connecting to a Messenger Bot
 
-Follow these steps:
 Create your messenger bot on https://developers.facebook.com/ 
 
 Add the App Secret on the Dashboard as an environment variable on Heroku:
