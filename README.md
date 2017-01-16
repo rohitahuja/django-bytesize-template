@@ -34,6 +34,10 @@ Install RabbitMQ:
     
     $ brew install rabbitmq
 
+Install Postgres:
+
+    $ brew install postgresql
+
 ### Creating your Project
 
 Using this template to create a new Django app is easy:
