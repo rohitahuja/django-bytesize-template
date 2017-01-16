@@ -1,4 +1,4 @@
-# Bytesize Django Starter Template
+# Django Bytesize Starter Template
 
 A project starter template for Django 1.10 that is production ready for creating a Facebook Messenger bot deployed to Heroku.
 
