@@ -16,6 +16,9 @@ class BotUser(models.Model):
     """BotUser
 
     Model for storing users of our bot.
+
+    Note that the first_name, last_name, profile_pic, etc. of the user is retrieved lazily via
+    the Messenger Platform API.
     """
     bot_id = models.CharField(max_length=30, primary_key=True)
 
