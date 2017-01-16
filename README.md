@@ -16,7 +16,7 @@ When interactions occur with the connected bot, a set of message events will be 
 
 The way message events are handled is contained in ``bot/utils/handle.py`` (see ``MessageHandler``) and ``bot/utils/base/handle.py`` (see ``BaseMessageHandler``). It is extremely important that you understand how these two classes work before writing your own custom handlers (the comments in the classes should walk you through how they work). The idea is that ``MessageHandler`` inherits from ``BaseMessageHandler``. You should not have to change ``BaseMessageHandler``; you should override the handle methods in ``MessageHandler``. Note that the most important method to understand is ``handle`` in ``BaseMessageHandler``.
 
-Once a message is handled and responded to, you have the option to log the message. The logging code is in ``bot/utils/log.py``, but it's more than likely that you won't need to change it. It'd be good to understand how the logging works though.
+Once a message is handled and responded to, you have the option to log the message. The logging code is in ``bot/utils/log.py`` (see ``MessageLogger``), but it's more than likely that you won't need to change it. It'd be good to understand how the logging works though.
 
 You can also prepare the chat with entities like a persistent menu, a get started page, etc. To do this, you'll need to customize the prepare methods in ``bot/utils/prepare.py``. See *Hacking on the Project* for more instructions on how to do this.
 
