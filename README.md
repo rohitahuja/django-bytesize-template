@@ -108,7 +108,7 @@ To prepare a chat with entities like a persistent menu, a get started page, etc.
     $ >>> p = BotThreadPreparer()
     $ >>> p.prepare()
 
-Work on the rest of what's necessary for your application.
+Work on the rest of what's necessary for your application. Note that if at any point you want to create an asynchronous task (periodic or not), see ``bot/tasks.py`` for examples. Regular tasks will need to get called in code (see the call for ``handle_payload`` in ``bot/views.py``), and periodic tasks will get picked up by the celery worker to run at their scheduled time.
 
 ### Testing the Project
 
