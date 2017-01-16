@@ -11,10 +11,13 @@ A project starter template for Django 1.10 that is production ready for creating
 - Uses Python 2.7.
 
 ## High Level Understanding of Workflow
-handler breakdown
-logging
-celery
-1. Be sure to read through the code in ``bot/utils/`` to understand how message events are handled and logged.
+When interactions occur with the connected bot, a set of message events will be sent to this application's web process through the ``/webhook`` route, which is handled in ``bot/views.py``. The function will verify the request, create an asynchronous task to handle the message events (see ``handle_payload`` in ``bot/tasks.py``), and respond to Facebook with a 200 OK response. We create an asynchronous task to respond to Facebook as soon as possible to continue receiving message events. Once the task is created, it will be handled by the celery worker process.
+
+The way message events are handled is contained in ``bot/utils/handle.py`` (see ``MessageHandler``) and ``bot/utils/base/handle.py`` (see ``BaseMessageHandler``). It is extremely important that you understand how these two classes work before writing your own custom handlers (the comments in the classes should walk you through how they work). The idea is that ``MessageHandler`` inherits from ``BaseMessageHandler``. You should not have to change ``BaseMessageHandler``; you should override the handle methods in ``MessageHandler``. Note that the most important method to understand is ``handle`` in ``BaseMessageHandler``.
+
+Once a message is handled and responded to, you have the option to log the message. The logging code is in ``bot/utils/log.py``, but it's more than likely that you won't need to change it. It'd be good to understand how the logging works though.
+
+You can also prepare the chat with entities like a persistent menu, a get started page, etc. To do this, you'll need to customize the prepare methods in ``bot/utils/prepare.py``. See *Hacking on the Project* for more instructions on how to do this.
 
 ## How to Use
 
@@ -88,7 +91,7 @@ Add the App Secret on the Dashboard as an environment variable on Heroku:
     
     $ heroku config:set APP_SECRET=<APP_SECRET>
 
-Add the products Messenger and Webhooks. On the Webhooks tab, create a New Subscription with the Callback URL as `http://<your-heroku-subdomain>.herokuapp.com/webhook/` and the Verify Token as one that you can configure on Heroku as the environment variable "VERIFY_TOKEN" on Heroku, or "yeezyyeezywhatsgood" by default. For Fields, check all the ones that begin with "message".
+Add the products Messenger and Webhooks. On the Webhooks tab, create a New Subscription with the Callback URL as `http://<your-heroku-subdomain>.herokuapp.com/webhook/` and the Verify Token as one that you can set on Heroku as the environment variable "VERIFY_TOKEN" on Heroku, or "yeezyyeezywhatsgood" by default. For Fields, check all the ones that begin with "message".
 
 On the Messenger tab, under "Webhooks", subscribe the webhook we just created to the page you want to connect your bot with. Also, under "Token Generation", generate a token for the page we're connecting the bot to and add it as an environment variable on Heroku:
 
