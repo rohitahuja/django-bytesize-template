@@ -54,33 +54,6 @@ class MessageHandler(BaseMessageHandler):
 
         return super(MessageHandler, self).handle(event=event, should_log=True)
 
-    def handle_delivery(self, event):
-        """handle_delivery
-
-        Handles a delivered message, which are given when a message we sent is delivered.
-
-        It's likely that this doesn't need to be handled, so feel free to remove this method.
-        """
-        raise NotImplementedError
-
-    def handle_read(self, event):
-        """handle_read
-
-        Handles a read message, which are those read by the user.
-
-        It's likely that this doesn't need to be handled, so feel free to remove this method.
-        """
-        raise NotImplementedError
-
-    def handle_echo(self, event):
-        """handle_echo
-
-        Handles an echoed message, which are those that we send.
-
-        It's likely that this doesn't need to be handled, so feel free to remove this method.
-        """
-        raise NotImplementedError
-
     def handle_received_text(self, event):
         """handle_received_text
 

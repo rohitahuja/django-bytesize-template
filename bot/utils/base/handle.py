@@ -90,7 +90,6 @@ class BaseMessageHandler(object):
         except BotUser.DoesNotExist:
             return None
 
-    # Creates a bot user
     def create_bot_user(self, sender):
         """create_bot_user
 
@@ -233,6 +232,8 @@ class BaseMessageHandler(object):
         """handle_delivery
 
         Handles a delivered message, which are given when a message we sent is delivered.
+
+        It's likely that this doesn't need to be handled, so feel free to ignore overriding this method.
         """
         pass
 
@@ -240,6 +241,8 @@ class BaseMessageHandler(object):
         """handle_read
 
         Handles a read message, which are those read by the user.
+
+        It's likely that this doesn't need to be handled, so feel free to ignore overriding this method.
         """
         pass
 
@@ -247,6 +250,8 @@ class BaseMessageHandler(object):
         """handle_echo
 
         Handles an echoed message, which are those that we send.
+
+        It's likely that this doesn't need to be handled, so feel free to ignore overriding this method.
         """
         pass
 
