@@ -14,7 +14,7 @@ A project starter template for Django 1.10 that is production ready for creating
 handler breakdown
 logging
 celery
-1. Be sure to read through the code in bot/utils/ to understand how message events are handled and logged.
+1. Be sure to read through the code in ``bot/utils/`` to understand how message events are handled and logged.
 
 ## How to Use
 
@@ -49,7 +49,7 @@ Install the necessary dependencies:
 
     $ pip install -r requirements.txt
 
-Make adjustments if necessary to the models in bot/models.py, and then create the migration files and migrate:
+Make adjustments if necessary to the models in ``bot/models.py``, and then create the migration files and migrate:
 
     $ python manage.py makemigrations
     $ python manage.py migrate
@@ -96,21 +96,22 @@ On the Messenger tab, under "Webhooks", subscribe the webhook we just created to
 
 ### Hacking on the Project
 
-Hack away on the project. Follow roughly these steps:
-    1. To handle messages:
-        - Write message handlers in bot/utils/handle.py
-    2. To prepare a chat with entities like a persistent menu, a get started page, etc.
-        - Customize the prepare methods in bot/utils/prepare.py
-        - Run the following:
-            $ heroku run python manage.py shell
-            $ >>> from bot.utils.prepare import *
-            $ >>> p = BotThreadPreparer()
-            $ >>> p.prepare()
-    3. Work on the rest of what's necessary for your application.
+Hack away on the project. To handle messages, write message handlers in ``bot/utils/handle.py``.
+
+To prepare a chat with entities like a persistent menu, a get started page, etc., customize the prepare methods in ``bot/utils/prepare.py``. Then, run the following:
+    
+    $ heroku run python manage.py shell
+    $ >>> from bot.utils.prepare import *
+    $ >>> p = BotThreadPreparer()
+    $ >>> p.prepare()
+
+Work on the rest of what's necessary for your application.
 
 ### Testing the Project
 
-To test the project, you'll need to open two terminal windows.
+For now, to test the project, you'll need to do it on production. So make some changes, push to Heroku, and test your messenger bot.
+
+In the future when we get remote servers, to test the project, you'll need to open two terminal windows.
 
 In the first one, run the server:
 
@@ -120,3 +121,4 @@ In the second one, run the celery worker:
 
     $ celery -A sample_bot worker -B -l info --without-gossip --without-mingle --without-heartbeat
 
+Now, with your messenger bot that is connected to the public URL of your remote server, you'll be able to test your code without having to push to Heroku. Only when you feel confident in your changes should you push to Heroku. 
