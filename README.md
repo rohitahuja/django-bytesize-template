@@ -10,7 +10,7 @@ A project starter template for Django 1.10 that is production ready for creating
 - Comes configured with Celery as the task scheduler.
 - Uses Python 2.7.
 
-## High Level Understanding of Workflow
+## The High Level
 When interactions occur with the connected bot, a set of message events will be sent to this application's web process through the ``/webhook`` route, which is handled in ``bot/views.py``. The function will verify the request, create an asynchronous task to handle the message events (see ``handle_payload`` in ``bot/tasks.py``), and respond to Facebook with a 200 OK response. We create an asynchronous task to respond to Facebook as soon as possible to continue receiving message events. Once the task is created, it will be handled by the celery worker process.
 
 The way message events are handled is contained in ``bot/utils/handle.py`` (see ``MessageHandler``) and ``bot/utils/base/handle.py`` (see ``BaseMessageHandler``). It is extremely important that you understand how these two classes work before writing your own custom handlers (the comments in the classes should walk you through how they work). The idea is that ``MessageHandler`` inherits from ``BaseMessageHandler``. You should not have to change ``BaseMessageHandler``; you should override the handle methods in ``MessageHandler``. Note that the most important method to understand is ``handle`` in ``BaseMessageHandler``.
