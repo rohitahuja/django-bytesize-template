@@ -83,7 +83,7 @@ Migrate the models on Heroku:
 
     $ heroku run python manage.py migrate
 
-Set up a messaging queue (CloudAMQP) for celery:
+Set up a messaging queue (CloudAMQP) for celery (you might need to input your credit card info into your Heroku account for this):
 
     $ heroku addons:create cloudamqp
 
