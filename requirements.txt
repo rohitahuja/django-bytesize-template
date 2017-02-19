@@ -6,7 +6,6 @@ Django==1.10.4
 django-common==0.1.51
 gunicorn==19.6.0
 kombu==4.0.2
--e git://github.com/rohitahuja/messenger.git#egg=messenger
 psycopg2==2.6.2
 pytz==2016.10
 requests==2.12.4

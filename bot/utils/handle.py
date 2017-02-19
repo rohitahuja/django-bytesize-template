@@ -75,7 +75,7 @@ class MessageHandler(BaseMessageHandler):
         # if event.is_received or event.is_postback:
         #     event.bot_user = self.get_bot_user(event.sender) or self.create_bot_user(event.sender)
 
-        return super(MessageHandler, self).handle(event=event, should_log=True)
+        return super(MessageHandler, self).handle(event=event)
 
     def handle_received_text(self, event):
         """handle_received_text
