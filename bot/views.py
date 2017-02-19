@@ -8,7 +8,8 @@ from .utils.verify import (
     verify_request,
     verify_token,
 )
-from .tasks import handle_payload
+from .utils.handle import handle_payload
+from .tasks import log_payload
 
 
 @csrf_exempt
@@ -22,8 +23,9 @@ def webhook(request):
         if not verify_request(request):
             return HttpResponseForbidden("Request couldn't be verified.")
 
-        # Handle the message payload asynchronously
-        handle_payload.apply_async((request.body,))
+        # Handle the message payload and log it asynchronously
+        handle_payload(request.body)
+        log_payload.apply_async((request.body,))
 
         # Notify success
         return HttpResponse("Request successful.")

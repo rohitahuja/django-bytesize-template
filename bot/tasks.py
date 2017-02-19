@@ -4,23 +4,22 @@ from celery.decorators import periodic_task
 from celery.schedules import crontab
 
 from messenger import Webhook
+from .utils.log import MessageLogger
 
-from .utils.handle import MessageHandler
 
+@task(name="log_payload")
+def log_payload(data):
+    """log_payload
 
-@task(name="handle_payload")
-def handle_payload(data):
-    """handle_payload
-
-    Asynchronous task to handle message event payload.
+    Asynchronous task to log the message event payload.
     """
     payload = json.loads(data)
     wh = Webhook(payload)
 
-    handler = MessageHandler()
+    mlogger = MessageLogger()
     for entry in wh.entries:
         for event in entry.messaging:
-            handler.handle(event)
+            mlogger.log(event)
 
 
 # Use the following as a model for creating periodically running tasks.

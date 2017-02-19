@@ -1,8 +1,31 @@
+import json
+import logging
+import traceback
 from messenger import (
     Message,
+    Webhook
 )
 
 from base.handle import BaseMessageHandler
+
+logger = logging.getLogger(__name__)
+
+
+def handle_payload(data):
+    """handle_payload
+
+    Asynchronous task to handle message event payload.
+    """
+    payload = json.loads(data)
+    wh = Webhook(payload)
+
+    handler = MessageHandler()
+    for entry in wh.entries:
+        for event in entry.messaging:
+            try:
+                handler.handle(event)
+            except:
+                logger.error(traceback.format_exc())
 
 
 class MessageHandler(BaseMessageHandler):

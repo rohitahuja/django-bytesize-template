@@ -7,11 +7,12 @@ from .. import (
 
 
 class UserProfile(object):
-    # Additional fields: 'locale','timezone'
     available_fields = ('first_name',
                         'last_name',
                         'profile_pic',
-                        'gender')
+                        'gender',
+                        'locale',
+                        'timezone')
 
     def __init__(self, access_token, user):
         self.access_token = access_token
